@@ -39,3 +39,6 @@ def load_settings() -> Settings:
             port=env.int("DB_PORT"),
         ),
     )
+
+
+settings: Settings = load_settings()
