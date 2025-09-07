@@ -21,8 +21,31 @@ class DatabaseConfig(BaseModel):
         )
 
 
+class RedisConfig(BaseModel):
+    host: str
+    port: int
+    password: str
+    db: int
+
+    def connection_url(self, db: Optional[int] = None) -> str:
+        actual_db = db if db is not None else self.db
+        return f"redis://:{self.password}@{self.host}:{self.port}/{actual_db}"
+
+
+class RabbitMQConfig(BaseModel):
+    user: str
+    password: str
+    host: str
+    port: int
+
+    def connection_url(self) -> str:
+        return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}"
+
+
 class Settings(BaseModel):
     db: DatabaseConfig
+    redis: RedisConfig
+    rabbitmq: RabbitMQConfig
 
 
 def load_settings() -> Settings:
@@ -38,6 +61,18 @@ def load_settings() -> Settings:
             password=env.str("DB_PASSWORD"),
             host=env.str("DB_HOST"),
             port=env.int("DB_PORT"),
+        ),
+        redis=RedisConfig(
+            host=env.str("REDIS_HOST"),
+            port=env.int("REDIS_PORT"),
+            password=env.str("REDIS_PASSWORD"),
+            db=env.int("REDIS_DB"),
+        ),
+        rabbitmq=RabbitMQConfig(
+            user=env.str("RABBITMQ_USER"),
+            password=env.str("RABBITMQ_PASSWORD"),
+            host=env.str("RABBITMQ_HOST"),
+            port=env.int("RABBITMQ_PORT"),
         ),
     )
 
