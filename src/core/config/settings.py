@@ -20,6 +20,7 @@ class DatabaseConfig(BaseModel):
             f"{self.port}/{self.database}"
         )
 
+
 class Settings(BaseModel):
     db: DatabaseConfig
 
