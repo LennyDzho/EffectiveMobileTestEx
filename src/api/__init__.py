@@ -9,7 +9,7 @@ from ..guards import require_user
 from ..providers.db_provider import DatabaseProvider
 
 from .users import users_router
-
+from .admins import admins_router, AdminsProvider
 
 api_router = APIRouter(
     prefix="/api",
@@ -18,7 +18,7 @@ api_router = APIRouter(
 )
 
 api_router.include_router(users_router)
-
+api_router.include_router(admins_router)
 
 def setup_container(app: FastAPI) -> None:
     container = make_async_container(
@@ -26,6 +26,7 @@ def setup_container(app: FastAPI) -> None:
         DatabaseProvider(),
         AuthProvider(),
         UsersProvider(),
+        AdminsProvider()
     )
 
     setup_dishka(container, app)
