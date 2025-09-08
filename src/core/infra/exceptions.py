@@ -43,3 +43,11 @@ class Forbidden(AppException):
 
 class NotFound(AppException):
     """Запись не найдена"""
+
+
+class InactiveUser(AppException):
+    """Пользователь не активен"""
+
+
+class Conflict(AppException):
+    """Конфликт данных"""
