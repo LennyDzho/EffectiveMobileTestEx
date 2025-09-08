@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
+class AppConfig(BaseModel):
+    debug: bool
 
 class DatabaseConfig(BaseModel):
     database: str
@@ -43,6 +45,7 @@ class RabbitMQConfig(BaseModel):
 
 
 class Settings(BaseModel):
+    app: AppConfig
     db: DatabaseConfig
     redis: RedisConfig
     rabbitmq: RabbitMQConfig
@@ -55,6 +58,9 @@ def load_settings() -> Settings:
     env.read_env(env_path)
 
     return Settings(
+        app=AppConfig(
+          debug=env.bool("DEBUG"),
+        ),
         db=DatabaseConfig(
             database=env.str("DB_NAME"),
             user=env.str("DB_USER"),
