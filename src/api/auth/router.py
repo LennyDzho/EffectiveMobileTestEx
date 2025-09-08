@@ -1,19 +1,19 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Request, Response
 
 from src.api.auth.schemas import (
     RegisterIn, RegisterResponse,
     LoginIn, LoginResponse,
     LogoutResponse,
-    MeResponse, UserData,
+    UserData,
 )
 from src.api.auth.services import AuthService, COOKIE_NAME, DEFAULT_SESSION_TTL
 
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"],
-    route_class=DishkaRoute,  # чтобы AuthService инжектился через Dishka
+    route_class=DishkaRoute,
 )
 
 
@@ -63,12 +63,3 @@ async def logout(
     response.delete_cookie(COOKIE_NAME, path="/")
     return LogoutResponse()
 
-
-@router.get("/me", response_model=MeResponse)
-async def me(
-    request: Request,
-    service: FromDishka[AuthService],
-):
-    sid = request.cookies.get(COOKIE_NAME)
-    user = await service.get_current_user(sid)
-    return MeResponse(user=UserData.model_validate(user))

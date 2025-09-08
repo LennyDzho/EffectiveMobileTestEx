@@ -65,6 +65,7 @@ class AuthService:
         }
         await repo.h_set(payload)
         return sid
+
     async def _delete_session(self, sid: str) -> None:
         repo = RedisRepo(prefix="sess", key=sid, ttl=self.session_ttl)
         await repo.delete()
@@ -137,21 +138,29 @@ class AuthService:
         repo = RedisRepo(prefix="sess", key=sid, ttl=self.session_ttl)
         raw = await repo.h_get_all()
         if not raw:
-            # либо TTL истёк, либо ключ удалён
             raise SessionExpired()
 
-        data = {k.decode(): v.decode() for k, v in raw.items()}
-        user_id = data.get("user_id")
-        if not user_id:
+        def _to_str(x):
+            return x.decode() if isinstance(x, (bytes, bytearray)) else x
+
+        data = {_to_str(k): _to_str(v) for k, v in raw.items()}
+
+        user_id_raw = data.get("user_id")
+        if not user_id_raw:
             raise SessionExpired(detail="Missing user_id in session")
 
-        user = await self.session.scalar(select(User).where(User.id == int(user_id)))
+        try:
+            user_id = int(user_id_raw)
+        except (TypeError, ValueError):
+            raise SessionExpired(detail="Corrupted user_id in session")
+
+        user = await self.session.scalar(select(User).where(User.id == user_id))
         if not user:
             raise NotFound("User not found")
         if not user.is_active:
             raise InactiveUser()
 
-        # продлеваем сессию
+        # Продлеваем TTL сессии (скользящее окно)
         await repo.redis.expire(repo._key(), self.session_ttl)
 
         return user

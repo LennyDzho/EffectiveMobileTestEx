@@ -3,10 +3,12 @@ from dishka.integrations.fastapi import DishkaRoute, FastapiProvider, setup_dish
 from fastapi import APIRouter, Depends, FastAPI
 
 from .auth import AuthProvider
+from .users import UsersProvider
 from ..guards import require_user
 
 from ..providers.db_provider import DatabaseProvider
 
+from .users import users_router
 
 
 api_router = APIRouter(
@@ -15,12 +17,15 @@ api_router = APIRouter(
     dependencies=[Depends(require_user)]
 )
 
+api_router.include_router(users_router)
+
 
 def setup_container(app: FastAPI) -> None:
     container = make_async_container(
         FastapiProvider(),
         DatabaseProvider(),
         AuthProvider(),
+        UsersProvider(),
     )
 
     setup_dishka(container, app)

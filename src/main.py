@@ -7,10 +7,12 @@ from scalar_fastapi import get_scalar_api_reference
 from starlette.responses import RedirectResponse
 
 from src.api import setup_container, api_router
+from src.api.auth import auth_router
+
 from src.api.exception_handlers import not_authenticated_exception_handler, invalid_authenticated_exception_handler, \
     http_exception_handler
 from src.core import setup_logging, settings, lifespan
-from src.api.auth import auth_router
+
 from src.core.infra.exceptions import NotAuthenticated, InvalidCredentials
 
 logger = logging.getLogger(__name__)
