@@ -2,7 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, Depends, Request, Response
 
-from src.api.auth.scheams import (
+from src.api.auth.schemas import (
     RegisterIn, RegisterResponse,
     LoginIn, LoginResponse,
     LogoutResponse,
