@@ -10,10 +10,12 @@ from src.api import setup_container, api_router
 from src.api.auth import auth_router
 
 from src.api.exception_handlers import not_authenticated_exception_handler, invalid_authenticated_exception_handler, \
-    http_exception_handler
+    http_exception_handler, session_expired_exception_handler, forbidden_exception_handler, \
+    inactive_user_exception_handler, not_found_exception_handler, conflict_exception_handler
 from src.core import setup_logging, settings, lifespan
 
-from src.core.infra.exceptions import NotAuthenticated, InvalidCredentials
+from src.core.infra.exceptions import NotAuthenticated, InvalidCredentials, SessionExpired, Forbidden, InactiveUser, \
+    NotFound, Conflict
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +37,20 @@ setup_container(app)
 
 # 401
 app.add_exception_handler(NotAuthenticated, not_authenticated_exception_handler)
+app.add_exception_handler(SessionExpired, session_expired_exception_handler)
 
 # 403
 app.add_exception_handler(InvalidCredentials, invalid_authenticated_exception_handler)
+app.add_exception_handler(Forbidden, forbidden_exception_handler)
+app.add_exception_handler(InactiveUser, inactive_user_exception_handler)
 
-# 500
+# 404
+app.add_exception_handler(NotFound, not_found_exception_handler)
+
+# 409
+app.add_exception_handler(Conflict, conflict_exception_handler)
+
+# 500 (catch-all)
 app.add_exception_handler(Exception, http_exception_handler)
 
 @app.get("/", include_in_schema=False)
