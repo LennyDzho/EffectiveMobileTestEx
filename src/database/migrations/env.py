@@ -1,6 +1,9 @@
 import asyncio
 from logging.config import fileConfig
 
+from src.core import settings
+from src.database.models import *
+
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
@@ -20,7 +23,10 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
+
+
+config.set_main_option("sqlalchemy.url", settings.db.connection_url())
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
