@@ -1,0 +1,8 @@
+from enum import Enum
+
+
+class ErrorStatus(str, Enum):
+    NOT_FOUND = "NOT_FOUND"
+    UNAUTHENTICATED = "UNAUTHENTICATED"
+    PERMISSION_DENIED = "PERMISSION_DENIED"
+    INTERNAL = "INTERNAL"
