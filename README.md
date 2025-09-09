@@ -55,6 +55,16 @@ poetry env use python3.13
 poetry install
 ```
 
+Создание новой миграции:
+```bash
+alembic revision --autogenerate -m "init"
+```
+
+Применение миграций:
+```bash
+alembic upgrade head
+```
+
 Запуск приложения
 
 ```shell
